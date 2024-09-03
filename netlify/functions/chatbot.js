@@ -18,23 +18,10 @@ exports.handler = async function (event, context) {
 
         const data = await response.json();
 
+        // Debugging: Log the entire response from OpenAI
+        console.log('OpenAI API response:', data);
+
         // Check if choices array exists and has at least one item
         if (data.choices && data.choices.length > 0) {
             const reply = data.choices[0].message.content;
-            return {
-                statusCode: 200,
-                body: JSON.stringify({ reply })
-            };
-        } else {
-            return {
-                statusCode: 500,
-                body: JSON.stringify({ error: "Invalid response from GPT API" })
-            };
-        }
-    } catch (error) {
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message })
-        };
-    }
-};
+         
