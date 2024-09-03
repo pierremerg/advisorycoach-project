@@ -4,15 +4,15 @@ const fetch = require('node-fetch');
 const fragrances = {
   "Gravitas Capital": {
     perfumer: "Grégoire Balleydier",
-    description: "A bold mix of citrus bursts with woody, leathery, and smoky undertones."
+    description: "A bold mix of buddha's hand citrus bursts, green tuberose, with woody, leathery, and smoky undertones."
   },
   "Albâtre Sépia": {
     perfumer: "Florian Gallo",
-    description: "A mysterious blend of two vanillas with a fresh, earthy depth."
+    description: "A mysterious blend of two vanillas (Tahitensis, and Planifloria) in a gourmand White truffle Note with a fresh, earthy depth."
   },
   "Silicone Monotone": {
     perfumer: "Claire Liegent",
-    description: "A modern blend of synthetic and natural elements, featuring lychee and pink pepper."
+    description: "A modern blend of synthetic and natural elements, featuring lychee, the Rose Cellophane Accord, and pink pepper."
   },
   "Simili Mirage": {
     perfumer: "Claire Liegent",
