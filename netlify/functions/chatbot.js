@@ -1,8 +1,11 @@
 const fetch = require('node-fetch');
 
 exports.handler = async function (event, context) {
+    console.log('Received event:', event);
+
     try {
         const { message } = JSON.parse(event.body);
+        console.log('Parsed message:', message);
 
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
@@ -17,6 +20,7 @@ exports.handler = async function (event, context) {
         });
 
         const data = await response.json();
+        console.log('Received data from OpenAI:', data);
 
         if (data.choices && data.choices.length > 0) {
             const reply = data.choices[0].message.content;
@@ -26,27 +30,35 @@ exports.handler = async function (event, context) {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*',  // Allow all origins
                     'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Credentials': 'true'
                 },
                 body: JSON.stringify({ reply })
             };
         } else {
+            console.error('Invalid response from GPT API:', data);
             return {
                 statusCode: 500,
                 headers: {
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Headers': 'Content-Type',
+                    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                    'Access-Control-Allow-Credentials': 'true'
                 },
                 body: JSON.stringify({ error: "Invalid response from GPT API", details: data })
             };
         }
     } catch (error) {
+        console.error('Error in function execution:', error);
         return {
             statusCode: 500,
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
                 'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Credentials': 'true'
             },
             body: JSON.stringify({ error: error.message })
         };
