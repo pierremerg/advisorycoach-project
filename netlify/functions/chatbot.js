@@ -8,7 +8,7 @@ exports.handler = async function (event, context) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` // Use the environment variable
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
             },
             body: JSON.stringify({
                 model: "gpt-3.5-turbo",
@@ -18,25 +18,36 @@ exports.handler = async function (event, context) {
 
         const data = await response.json();
 
-        // Debugging: Log the entire response from OpenAI
-        console.log('OpenAI API response:', data);
-
-        // Check if choices array exists and has at least one item
         if (data.choices && data.choices.length > 0) {
             const reply = data.choices[0].message.content;
             return {
                 statusCode: 200,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',  // Allow all origins
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                },
                 body: JSON.stringify({ reply })
             };
         } else {
             return {
                 statusCode: 500,
-                body: JSON.stringify({ error: "Invalid response from GPT API", details: data }) // Include the entire response for debugging
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Content-Type',
+                },
+                body: JSON.stringify({ error: "Invalid response from GPT API", details: data })
             };
         }
     } catch (error) {
         return {
             statusCode: 500,
+            headers: {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+            },
             body: JSON.stringify({ error: error.message })
         };
     }
