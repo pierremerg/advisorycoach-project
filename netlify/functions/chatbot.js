@@ -1,6 +1,20 @@
 const fetch = require('node-fetch');
 
 exports.handler = async function (event, context) {
+    // Handle OPTIONS preflight request
+    if (event.httpMethod === 'OPTIONS') {
+        return {
+            statusCode: 200,
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'POST, OPTIONS',
+                'Access-Control-Allow-Credentials': 'true',
+            },
+            body: JSON.stringify({})
+        };
+    }
+
     console.log('Received event:', event);
 
     try {
@@ -28,7 +42,7 @@ exports.handler = async function (event, context) {
                 statusCode: 200,
                 headers: {
                     'Content-Type': 'application/json',
-                    'Access-Control-Allow-Origin': '*',  // Allow all origins
+                    'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Headers': 'Content-Type',
                     'Access-Control-Allow-Methods': 'POST, OPTIONS',
                     'Access-Control-Allow-Credentials': 'true'
