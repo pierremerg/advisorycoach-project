@@ -24,4 +24,20 @@ exports.handler = async function (event, context) {
         // Check if choices array exists and has at least one item
         if (data.choices && data.choices.length > 0) {
             const reply = data.choices[0].message.content;
-         
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ reply })
+            };
+        } else {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "Invalid response from GPT API", details: data }) // Include the entire response for debugging
+            };
+        }
+    } catch (error) {
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: error.message })
+        };
+    }
+};
