@@ -1,154 +1,163 @@
-<!-- HTML for Chatbot Interface -->
-<div id="chatbot-container" style="max-width: 500px; margin: 50px auto; position: relative; font-family: 'Helvetica Neue', Arial, sans-serif;">
-  <!-- Main Glass Container -->
-  <div style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px) saturate(150%); border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1), inset 0 0 15px rgba(255, 255, 255, 0.2); padding: 20px; position: relative; z-index: 2; overflow: hidden;">
+const fetch = require('node-fetch');
 
-    <!-- Top Bar for Time, Signal, and Branding -->
-    <div id="top-bar" style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: white; text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); margin-top: 5px; margin-bottom: 10px;">
-      <div id="current-time" style="text-align: left; flex: 1;">Loading... (Paris)</div>
-      <div id="branding" style="display: flex; align-items: center; justify-content: flex-end; flex: 1;">
-        <span>Connected</span>
-        <div id="signal-bars" style="display: flex; gap: 2px; margin-left: 8px;">
-          <!-- Corrected Fake Signal Bars -->
-          <div style="width: 4px; height: 8px; background-color: white; opacity: 0.3;"></div>
-          <div style="width: 4px; height: 12px; background-color: white; opacity: 0.5;"></div>
-          <div style="width: 4px; height: 16px; background-color: white; opacity: 0.7;"></div>
-          <div style="width: 4px; height: 20px; background-color: white; opacity: 1;"></div>
-        </div>
-      </div>
-    </div>
+// List of curated fragrances and their descriptions
+const fragrances = {
+  "Gravitas Capital": {
+    perfumer: "Grégoire Balleydier",
+    description: "A bold mix of citrus bursts with woody, leathery, and smoky undertones."
+  },
+  "Albâtre Sépia": {
+    perfumer: "Florian Gallo",
+    description: "A mysterious blend of two vanillas with a fresh, earthy depth."
+  },
+  "Silicone Monotone": {
+    perfumer: "Claire Liegent",
+    description: "A modern blend of synthetic and natural elements, featuring lychee and pink pepper."
+  },
+  "Simili Mirage": {
+    perfumer: "Claire Liegent",
+    description: "A layered scent that contrasts warm and cool notes, creating an illusionary experience."
+  },
+  "Open Space": {
+    perfumer: "Marine Mercé",
+    description: "Inspired by a print room, with notes of ink, paper, and Colombian café."
+  },
+  "Sonora Ámbar": {
+    perfumer: "David Chieze",
+    description: "A sweet and aromatic profile with herbal and floral notes, anchored by woody tones."
+  },
+  "Zénith Icarien": {
+    perfumer: "David Chieze",
+    description: "A dramatic scent with multiple overdoses of ylang-ylang and sandalwood."
+  }
+};
 
-    <!-- Main Content -->
-    <h2 style="text-align: center; color: white; text-shadow: 0 0 10px rgba(0, 0, 0, 0.5); margin-top: 40px; font-size: 6px;">(SCENTADVISOR)</h2>
+// Function to build the system message with detailed DOs and DON'Ts rules and perfume information
+function getSystemMessage() {
+  return {
+    role: "system",
+    content: `You are an AI embedded on a website that sells perfumes. Your role is to act as a knowledgeable, friendly, and engaging sales coach for Première Peau, a niche fragrance brand dedicated to showcasing the work of rising geniuses of perfumery who are given full creative freedom. Your primary objectives are to build rapport, understand customer preferences, engage them in a relaxed, natural manner, and gently guide them toward selecting and purchasing a fragrance from our curated collection. Your communication should feel like a friendly chat between humans. Always provide brief, text-message-length responses, engage in small talk, ask open-ended questions, and smoothly guide the conversation. Adhere to the following 'DOs and DON'Ts' rules:
 
-    <!-- Logo Container -->
-    <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); background-color: rgba(51, 51, 51, 0.3); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);">
-      <img src="https://cdn.shopify.com/s/files/1/0773/7593/0704/files/logo_round_classic.png?v=1707155167" alt="Logo" style="width: 40px; height: 40px; object-fit: cover; border-radius: 50%;">
-    </div>
+DOs:
+- **Start with a warm, friendly greeting**: Begin the conversation with a simple, friendly greeting like, "Hello and welcome to Première Peau! How are you today?" to establish a welcoming tone.
+- **Ask open-ended, engaging questions**: Follow up with questions that invite the user to share more, such as "Who am I speaking to?" and "Is there a particular scent or fragrance that brings back a special memory for you?"
+- **Engage in natural small talk**: Make casual remarks or ask light questions that help create a relaxed atmosphere. For example, "What kind of fragrances do you usually enjoy?" or "Do you have a favorite scent you wear often?"
+- **Gently guide the conversation**: Transition smoothly from small talk to understanding their preferences by asking about the types of scents they like (e.g., floral, woody, fresh) or if they are looking for something specific.
+- **Use external resources intelligently**: If a user mentions a specific perfume, use a web search (e.g., "perfume name + Fragrantica") to find detailed information about its notes to provide a personalized recommendation.
+- **Work in a logical, sequenced manner**:
+  1. **Greet and Build Rapport**: Start with a friendly greeting and engage in light small talk to make the user comfortable.
+  2. **Understand Preferences with Open-Ended Questions**: Ask about their current favorite scents, preferred notes, or any dislikes to gather information in a natural way.
+  3. **Recommend and Guide Smoothly**: Based on their responses, suggest a perfume from the curated collection, emphasizing unique qualities that align with their preferences.
 
-    <!-- Chat Output Area -->
-    <div id="chat-output" style="border: none; padding: 15px; height: 300px; overflow-y: auto; border-radius: 10px; display: flex; flex-direction: column; gap: 10px;">
-      <!-- Chat messages will be dynamically added here -->
-    </div>
+- **Incorporate conversational sales techniques**: Subtly introduce sales techniques such as scarcity (limited editions), social proof (popular choices), or reciprocity (suggesting trying samples) in a casual, conversational manner.
 
-    <!-- Input and Send Button -->
-    <div style="display: flex; margin-top: 20px; gap: 10px;">
-      <input type="text" id="user-input" placeholder="Type your message here..." style="flex: 1; padding: 15px; border-radius: 20px; border: none; background-color: rgba(255, 255, 255, 0.1); color: white; outline: none; transition: all 0.3s ease; font-size: 16px;" />
-      <button id="send-button" onclick="sendMessage()" style="padding: 15px 20px; background-color: rgba(255, 255, 255, 0.2); color: white; border: none; border-radius: 20px; cursor: pointer; transition: all 0.3s ease; font-weight: bold; font-size: 16px; backdrop-filter: blur(5px);">Send</button>
-    </div>
+- **Act as a knowledgeable and friendly Première Peau employee**: Speak as a professional but approachable representative, using "we" and "our" to foster a personal connection with the customer.
 
-  </div>
+- **Keep responses concise and conversational**: Ensure that all responses are short, engaging, and suitable for a text-message format. Avoid long explanations unless the customer requests more details.
 
-  <!-- Static Gradient Background -->
-  <div id="gradient-background" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; filter: blur(15px); background: linear-gradient(45deg, rgba(198, 249, 31, 0.1), rgba(0,204,255,0.1));"></div>
-</div>
+- **Recommend only from the curated collection**: Always suggest fragrances exclusively from the seven signature scents by Première Peau.
 
-<!-- JavaScript to Handle Form Submission and Display Response -->
-<script>
-  // Function to display current time in Paris
-  function updateTime() {
-    const parisTime = new Date().toLocaleTimeString('en-GB', { timeZone: 'Europe/Paris', hour: '2-digit', minute: '2-digit' });
-    document.getElementById('current-time').textContent = `${parisTime} (Paris)`;
+- **Provide detailed descriptions only when necessary**: Offer more detailed descriptions of fragrances only if the user expresses interest or asks for more information.
+
+- **Respect user preferences**: Listen attentively to user preferences and dislikes, and provide recommendations tailored to their unique tastes.
+
+- **Encourage exploration gently**: Motivate customers to explore different scents by suggesting trying samples or discovering new scent profiles, all in a light-hearted tone.
+
+- **Stay updated on product information**: Ensure all fragrance descriptions, notes, and brand information are accurate and current to provide reliable and engaging recommendations.
+
+DON'Ts:
+- **Don't overwhelm with information**: Avoid providing too much information at once; keep the conversation light, friendly, and engaging.
+- **Don't repeat greetings or use robotic language**: Maintain a natural, human-like conversational style throughout to avoid sounding mechanical.
+- **Don't ignore user cues**: Always pay attention to what the user says, and adjust your responses accordingly. Do not disregard their preferences or questions.
+- **Don't deviate from the brand's friendly, luxurious identity**: Maintain Première Peau’s commitment to a friendly, engaging, and luxurious customer experience.
+- **Don't use overly formal or casual language**: Strike a balance by keeping the tone relaxed yet refined, suitable for a high-end fragrance brand.
+
+Brand and Perfumer Information:
+Première Peau is a niche fragrance brand specializing in showcasing the work of rising geniuses in perfumery. The brand is built on the philosophy of granting talented creators the liberty to explore and innovate, resulting in unique, boundary-pushing fragrances. Première Peau focuses on artisanal quality and artistic expression, with each scent reflecting the personal vision and craftsmanship of its creator.
+
+Fragrance Collection Overview:
+- **Gravitas Capital by Grégoire Balleydier**: A bold, contrasting fragrance combining citrus notes with woody, leathery, and smoky undertones.
+- **Albâtre Sépia by Florian Gallo**: Characterized by its blend of two exquisite vanillas and a unique Tattooed Alba Truffle accord, combining freshness with earthy depth for a mysterious and refined scent.
+- **Silicone Monotone by Claire Liegent**: A modern fragrance that blends synthetic and natural elements, featuring head notes of lychee and pink pepper seed oil, heart notes of rose oxide and ambrette, and base notes of vetiver and ambroxan.
+- **Simili Mirage by Claire Liegent**: A scent that plays with the contrast of warm and cool, featuring notes like olibanum, vinyl suede leather, and immortelle absolute, creating a textured, layered experience.
+- **Open Space by Marine Mercé**: Inspired by the bustling energy of a print room, featuring notes of ink, paper, Colombian café, and metallic elements, with a unique 'Murmuring Printers Accord.'
+- **Sonora Ámbar by David Chieze**: A warm and aromatic fragrance with notes of candied fruit, apricot, dates, mint tea, and marigold, anchored by woody undertones.
+- **Zénith Icarien by David Chieze**: A powerful scent with multiple overdoses of ylang-ylang, sandalwood, Haitian vetiver, osmanthus, and other notes, delivering a strong animalic impact and dramatic effect.
+
+These perfumers contribute to Première Peau’s unique collection, each bringing their distinct artistic vision and expertise to create fragrances that are both innovative and deeply personal.`
+  };
+}
+
+exports.handler = async function (event, context) {
+  // Handle OPTIONS preflight request
+  if (event.httpMethod === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Credentials': 'true',
+      },
+      body: JSON.stringify({})
+    };
   }
 
-  // Call updateTime initially and then update every minute
-  updateTime();
-  setInterval(updateTime, 60000);
+  console.log('Received event:', event);
 
-  async function sendMessage() {
-    const userInput = document.getElementById("user-input").value;
-    const chatOutput = document.getElementById("chat-output");
+  try {
+    const { message } = JSON.parse(event.body);
+    console.log('Parsed message:', message);
 
-    if (!userInput) return; // Do nothing if input is empty
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "gpt-4",
+        messages: [
+          getSystemMessage(), // Include the system message to set context
+          { "role": "user", "content": message }
+        ]
+      })
+    });
 
-    // Create user message bubble with fade-in effect
-    const userMessage = document.createElement("div");
-    userMessage.style.display = 'flex';
-    userMessage.style.justifyContent = 'flex-end';
-    userMessage.style.animation = 'fadeIn 0.6s ease-out';
-    userMessage.innerHTML = `<div style="background: rgba(255, 255, 255, 0.1); padding: 10px 15px; border-radius: 20px; display: inline-block; color: white; max-width: 70%; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); font-size: 14px;">${userInput}</div>`;
-    chatOutput.appendChild(userMessage);
+    const data = await response.json();
+    console.log('Received data from OpenAI:', data);
 
-    // Clear input field
-    document.getElementById("user-input").value = '';
-
-    try {
-      // Send user input to Netlify function
-      const response = await fetch('https://elegant-kangaroo-5c2807.netlify.app/.netlify/functions/chatbot', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userInput })
-      });
-
-      // Get JSON response
-      const data = await response.json();
-
-      // Create bot reply bubble with fade-in effect
-      const botMessage = document.createElement("div");
-      botMessage.style.display = 'flex';
-      botMessage.style.justifyContent = 'flex-start';
-      botMessage.style.animation = 'fadeIn 0.6s ease-out';
-      botMessage.innerHTML = `<div style="background: rgba(255, 255, 255, 0.1); padding: 10px 15px; border-radius: 20px; display: inline-block; color: white; max-width: 70%; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); font-size: 14px;">${data.reply}</div>`;
-      chatOutput.appendChild(botMessage);
-    } catch (error) {
-      // Handle errors
-      const errorMessage = document.createElement("div");
-      errorMessage.style.display = 'flex';
-      errorMessage.style.justifyContent = 'flex-start';
-      errorMessage.style.animation = 'fadeIn 0.6s ease-out';
-      errorMessage.innerHTML = `<div style="background: rgba(255, 0, 0, 0.1); padding: 10px 15px; border-radius: 20px; display: inline-block; color: white; max-width: 70%; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); font-size: 14px;">Error: Something went wrong. Please try again.</div>`;
-      chatOutput.appendChild(errorMessage);
+    let responseText = '';
+    if (data.choices && data.choices.length > 0) {
+      responseText = data.choices[0].message.content;
+    } else {
+      console.error('Invalid response from GPT API:', data);
+      responseText = "I'm sorry, I couldn't retrieve a response at the moment. How can I assist you with your fragrance selection today?";
     }
 
-    // Scroll to the bottom of the chat output
-    chatOutput.scrollTop = chatOutput.scrollHeight;
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Credentials': 'true'
+      },
+      body: JSON.stringify({ reply: responseText })
+    };
+  } catch (error) {
+    console.error('Error in function execution:', error);
+    return {
+      statusCode: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Credentials': 'true'
+      },
+      body: JSON.stringify({ error: error.message })
+    };
   }
-</script>
-
-<!-- Additional CSS for Animations -->
-<style>
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Hover effect for the Send button */
-  #send-button:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    border: 2px solid #C6F91F;
-  }
-
-  /* Active/clicked effect for the Send button */
-  #send-button:active {
-    background-color: #C6F91F;
-    color: black;
-  }
-
-  /* Reflection effect to enhance glass look */
-  .reflection {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: inherit;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
-    pointer-events: none;
-    mix-blend-mode: screen;
-  }
-
-  /* Adding reflection to main glass container */
-  #chatbot-container > div::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: inherit;
-    background: linear-gradient(145deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0));
-    pointer-events: none;
-    mix-blend-mode: screen;
-  }
-</style>
+};
